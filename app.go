@@ -1,7 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"net"
+	"strings"
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gompus/snowflake"
 	"github.com/lukasl-dev/octave/command/pause"
@@ -42,6 +47,11 @@ func newApp(cfg config.Config) *app {
 }
 
 func (a *app) run() (err error) {
+	timeout, _ := time.ParseDuration("30s")
+	err = waitForLavaLink(a.cfg, timeout)
+	if err != nil {
+		return err
+	}
 	a.session, err = discordgo.New(fmt.Sprintf("Bot %s", a.cfg.Token))
 	if err != nil {
 		return fmt.Errorf("failed to create discord session: %w", err)
@@ -80,4 +90,30 @@ func (a *app) registerCommands() {
 	a.cmds.add(seek.Seek(seek.Deps{Conn: a.conn}))
 	a.cmds.add(stop.Stop(stop.Deps{Conn: a.conn}))
 	a.cmds.add(volume.Volume(volume.Deps{Conn: a.conn}))
+}
+
+func waitForLavaLink(cfg config.Config, maxTime time.Duration) error {
+	for i := 0; i < int(maxTime.Seconds()); i++ {
+
+		if isLavaLinkReady(cfg, time.Second) {
+			return nil
+		}
+	}
+	return errors.New("LavaLink is unreachable")
+}
+
+func isLavaLinkReady(cfg config.Config, timeout time.Duration) bool {
+	host := strings.Split(cfg.Lavalink.Host, ":")[0]
+	port := strings.Split(cfg.Lavalink.Host, ":")[1]
+	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
+	if err != nil {
+		fmt.Println("Connecting error:", err)
+		return false
+	}
+	if conn != nil {
+		defer conn.Close()
+		fmt.Println("Found LavaLink at", net.JoinHostPort(host, port))
+		return true
+	}
+	return false
 }
