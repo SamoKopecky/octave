@@ -1,0 +1,10 @@
+version: '3'
+services:
+  lavalink_octave:
+    build:
+      context: Lavalink
+    ports:
+      - "2334:2334"
+  bot_octave:
+    build:
+      context: .
