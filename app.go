@@ -107,6 +107,9 @@ func isLavaLinkReady(cfg config.Config, timeout time.Duration) bool {
 	port := strings.Split(cfg.Lavalink.Host, ":")[1]
 	conn, err := net.DialTimeout("tcp", net.JoinHostPort(host, port), timeout)
 	if err != nil {
+		if strings.Contains(err.Error(), "refused") {
+			time.Sleep(timeout)
+		}
 		fmt.Println("Connecting error:", err)
 		return false
 	}
