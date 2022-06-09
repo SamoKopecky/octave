@@ -8,3 +8,5 @@ services:
   bot_octave:
     build:
       context: .
+    environment:
+      - "TOKEN=${OCTAVE_BOT}"
