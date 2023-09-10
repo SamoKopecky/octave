@@ -21,3 +21,4 @@
 .vscode
 # Built binary
 octave
+.env
