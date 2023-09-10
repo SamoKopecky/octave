@@ -3,6 +3,8 @@ package play
 import (
 	"errors"
 	"fmt"
+	"log"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/gompus/snowflake"
 	"github.com/lukasl-dev/octave/command"
@@ -36,6 +38,9 @@ func run(deps Deps) command.Handler {
 		if err != nil {
 			return command.ErrorResponse(errors.New("failed to play track"))
 		}
+
+		s.ChannelMessageSend(evt.ChannelID, fmt.Sprintf("Playing **%s** with link %s", tr.Info.Title, tr.Info.URI))
+		log.Printf("Playing: %+v\n", tr.Info)
 
 		return &discordgo.InteractionResponseData{
 			Components: []discordgo.MessageComponent{

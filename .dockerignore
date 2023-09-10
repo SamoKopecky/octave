@@ -1,0 +1,6 @@
+.env.example
+.git
+Dockerfile
+lavalink
+docker-compose.yaml
+octave

@@ -1,11 +1,18 @@
-FROM golang:1.18.3-bullseye
+FROM golang:1.21.1 as build
+
+WORKDIR /usr/src
 
 COPY . .
 
 ENV GOPATH=""
-ENV LAVALINK_HOST="lavalink_octave:2334"
-ENV LAVALINK_PASSPHRASE=youshallnotpass
 
-RUN go build
+RUN go build -v
 
-CMD ["./octave"]
+FROM golang:1.21.1 as prod
+
+WORKDIR /usr/app
+
+COPY .env .
+COPY --from=build /usr/src/octave .
+
+ENTRYPOINT ["./octave"]

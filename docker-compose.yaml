@@ -1,12 +1,17 @@
 version: '3'
+name: ocatave
+
 services:
-  lavalink_octave:
+  lavalink:
     build:
-      context: Lavalink
+      context: lavalink
     ports:
-      - "2334:2334"
-  bot_octave:
+      - 2334:2334
+    restart: unless-stopped
+  bot:
     build:
       context: .
     environment:
-      - "TOKEN=${OCTAVE_BOT}"
+      LAVALINK_HOST: "lavalink:2334"
+      LAVALINK_PASSPHRASE: alpharius
+    restart: unless-stopped

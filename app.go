@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"time"
@@ -99,7 +100,7 @@ func waitForLavaLink(cfg config.Config, maxTime time.Duration) error {
 			return nil
 		}
 	}
-	return errors.New("LavaLink is unreachable")
+	return errors.New("lavalink is unreachable")
 }
 
 func isLavaLinkReady(cfg config.Config, timeout time.Duration) bool {
@@ -110,12 +111,12 @@ func isLavaLinkReady(cfg config.Config, timeout time.Duration) bool {
 		if strings.Contains(err.Error(), "refused") {
 			time.Sleep(timeout)
 		}
-		fmt.Println("Connecting error:", err)
+		log.Print("Connecting error: ", err)
 		return false
 	}
 	if conn != nil {
 		defer conn.Close()
-		fmt.Println("Found LavaLink at", net.JoinHostPort(host, port))
+		log.Print("Found lavalink at: ", net.JoinHostPort(host, port))
 		return true
 	}
 	return false
